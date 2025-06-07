@@ -133,7 +133,7 @@ def main():
                 resume_text = handle_file_upload(upload_file)
                 st.success("✅ Successfully extracted the text from the uploaded resume.")
 
-                with st.expander("🔍 <span class='expander-header'>View Extracted Resume Text</span>", expanded=False):
+                with st.expander("🔍 View Extracted Resume Text", expanded=True):
                     st.markdown(resume_text[:2000] + ("..." if len(resume_text) > 2000 else ""), unsafe_allow_html=True)
                 st.markdown("<h3 style='color:#4F8BF9;'>🎯 Predicted Category</h3>", unsafe_allow_html=True)
                 category = pred(resume_text)
