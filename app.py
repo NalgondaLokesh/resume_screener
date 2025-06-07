@@ -135,7 +135,6 @@ def main():
 
                 with st.expander("🔍 <span class='expander-header'>View Extracted Resume Text</span>", expanded=False):
                     st.markdown(resume_text[:2000] + ("..." if len(resume_text) > 2000 else ""), unsafe_allow_html=True)
-
                 st.markdown("<h3 style='color:#4F8BF9;'>🎯 Predicted Category</h3>", unsafe_allow_html=True)
                 category = pred(resume_text)
                 st.markdown(
