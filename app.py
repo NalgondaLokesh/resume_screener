@@ -4,6 +4,7 @@ import pickle
 import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 import PyPDF2
+import docx
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -72,20 +73,83 @@ def handle_file_upload(uploaded_file):
 
 #web app
 def main():
-    st.title("Resume Screening App")
-    st.markdown("Upload a resume in PDF, TXT, or DOCX format and get the predicted job category.")
-    upload_file = st.file_uploader("Upload your resume", type=["pdf", "docx", "txt"])
+    st.set_page_config(page_title="Resume Screening App", page_icon="📝", layout="centered")
+    st.markdown(
+        """
+        <style>
+        .main-header {
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(90deg, #4F8BF9 0%, #1CB5E0 100%);
+            padding: 30px 0 10px 0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            color: #888;
+            margin-top: 40px;
+        }
+        .category-box {
+            background: linear-gradient(90deg, #D6EAF8 0%, #AED6F1 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(79,139,249,0.08);
+        }
+        .expander-header {
+            color: #154360;
+        }
+        </style>
+        <div class='main-header'>
+            <h1>📝 Resume Screening App</h1>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.sidebar:
+        st.image("https://img.icons8.com/color/96/000000/resume.png", width=100)
+        st.markdown("## <span style='color:#4F8BF9;'>About</span>", unsafe_allow_html=True)
+        st.info(
+            "Upload a resume in **PDF**, **TXT**, or **DOCX** format and get the predicted job category instantly!"
+        )
+        st.markdown("---")
+        st.markdown("**A project by <span style='color:#1CB5E0;'>Nalgonda Lokesh</span>**", unsafe_allow_html=True)
+
+    st.markdown(
+        "<p style='text-align: center; color: #1CB5E0; font-size: 18px;'>Select your resume file below and click to see the prediction.</p>",
+        unsafe_allow_html=True,
+    )
+
+    upload_file = st.file_uploader(
+        "📄 Upload your resume", type=["pdf", "docx", "txt"], help="Supported formats: PDF, DOCX, TXT"
+    )
 
     if upload_file is not None:
-        try:
-            resume_text = handle_file_upload(upload_file)
-            st.write("Successfully extracted the text from the uploaded resume.")
-            st.subheader("Predicted Category")
-            category = pred(resume_text)
-            st.write(f"The predicted category of the uploaded resume is: **{category}**")
-        except Exception as e:
-            st.error(f"An error occurred while processing the file: {e}")
-            st.write("Please ensure the file is a valid PDF, DOCX, or TXT file and try again.")
+        with st.spinner("Extracting and analyzing your resume..."):
+            try:
+                resume_text = handle_file_upload(upload_file)
+                st.success("✅ Successfully extracted the text from the uploaded resume.")
+
+                with st.expander("🔍 <span class='expander-header'>View Extracted Resume Text</span>", expanded=False):
+                    st.markdown(resume_text[:2000] + ("..." if len(resume_text) > 2000 else ""), unsafe_allow_html=True)
+
+                st.markdown("<h3 style='color:#4F8BF9;'>🎯 Predicted Category</h3>", unsafe_allow_html=True)
+                category = pred(resume_text)
+                st.markdown(
+                    f"<div class='category-box'><h2 style='color: #154360;'>{category}</h2></div>",
+                    unsafe_allow_html=True,
+                )
+            except Exception as e:
+                st.error(f"❌ An error occurred while processing the file: {e}")
+                st.warning("Please ensure the file is a valid PDF, DOCX, or TXT file and try again.")
+
+    st.markdown(
+        "<div class='footer'><hr><p>© 2025 <span style='color:#4F8BF9;'>Resume Screener</span> | Powered by <span style='color:#1CB5E0;'>Streamlit</span></p></div>",
+        unsafe_allow_html=True,
+    )
 
 if __name__ == '__main__':
     main()
